@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+
+  centos1:
+    image: centos
+    container_name: centos1
+    restart: always
+    ports:
+      - "9101:9100"
+    volumes:
+      - ~/docker-data/prometheus-data/node-exporter:/root
+    command: /root/node_exporter
+
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    user: root
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ~/docker-data/prometheus-data/prometheus:/etc/prometheus
+      - ~/docker-data/prometheus-data/prometheus-db:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    user: root
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ~/docker-data/prometheus-data/grafana-data:/var/lib/grafana
+
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    user: root
+    ports:
+      - "9091:9091"
+    volumes:
+      - ~/docker-data/prometheus-data/pushgateway-data:/var/lib/pushgateway
+
